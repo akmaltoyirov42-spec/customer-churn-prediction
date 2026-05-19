@@ -1,11 +1,5 @@
-"""
-Train three models and pick the best one by ROC-AUC.
-Accuracy alone is misleading on churn data because only ~26% of customers actually churn.
-"""
-
 import joblib
 import json
-import os
 from pathlib import Path
 
 import pandas as pd
@@ -50,7 +44,6 @@ def train():
                 n_estimators=300,
                 learning_rate=0.05,
                 max_depth=4,
-                # class_weight equiv in XGB — churn is ~26% so we push it a bit
                 scale_pos_weight=int((y_train == 0).sum() / (y_train == 1).sum()),
                 use_label_encoder=False,
                 eval_metric="logloss",
@@ -83,7 +76,7 @@ def train():
     with open(MODEL_DIR / "metrics.json", "w") as f:
         json.dump(metrics, f, indent=2)
 
-    print(f"\nSaved to {MODEL_DIR}/")
+    print(f"Saved to {MODEL_DIR}/")
     return metrics
 
 
