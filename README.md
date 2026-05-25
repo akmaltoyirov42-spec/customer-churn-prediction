@@ -3,7 +3,7 @@
 ![CI](https://github.com/akmaltoyirov42-spec/customer-churn-prediction/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 
-predicts whether a telecom customer will leave. tried 3 different models, picked the best, then wrapped it in a FastAPI endpoint so it actually feels like a real ML project.
+predicts whether a telecom customer will leave. trained 3 models, picked the best by ROC-AUC, wrapped it in a FastAPI endpoint.
 
 dataset: [IBM Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) — 7k customers, 20 features.
 
@@ -17,7 +17,7 @@ dataset: [IBM Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/te
 | Random Forest | 0.851 | 0.62 |
 | **XGBoost** | **0.867** | **0.65** |
 
-i learned the hard way that accuracy is the wrong metric here — only 26% of customers churn, so a model that always predicts "no churn" gets 74% accuracy and is completely useless. ROC-AUC is way better for this.
+accuracy is the wrong metric here — only 26% of customers churn, so a model that always predicts "no churn" gets 74% accuracy and is useless. ROC-AUC handles the imbalance properly.
 
 ---
 
@@ -65,11 +65,17 @@ tests mock the model so CI doesn't need a trained file.
 
 ---
 
-## things i ran into
+## notes
 
 - `TotalCharges` column had blank strings instead of NaN — pandas didn't catch them as missing, had to fix in preprocessing
-- used `scale_pos_weight` in XGBoost for the class imbalance instead of oversampling (simpler and worked just as well)
-- saving the scaler alongside the model is important — otherwise inference uses different preprocessing than training
+- used `scale_pos_weight` in XGBoost for class imbalance instead of oversampling (simpler, works well)
+- the scaler is saved alongside the model so inference uses the same preprocessing as training
+
+---
+
+## what's next
+
+planning a customer lifetime value (CLV) model on the same dataset — predicting how much a customer is worth rather than just if they leave. probably with a regression head and a different loss (gamma or tweedie).
 
 ---
 
